@@ -1,5 +1,6 @@
 package com.linkedin.linkedin.features.authentication.service.impl;
 
+import java.io.UnsupportedEncodingException;
 import java.security.SecureRandom;
 import java.time.LocalDateTime;
 
@@ -18,11 +19,12 @@ import com.linkedin.linkedin.features.authentication.utils.EmailService;
 import com.linkedin.linkedin.features.authentication.utils.Encoder;
 import com.linkedin.linkedin.features.authentication.utils.JsonWebToken;
 
+import jakarta.mail.MessagingException;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.PersistenceContext;
 
 @Service
-@Transactional
+// @Transactional
 public class AuthenticationServiceImpl implements AuthenticationService {
     private static final Logger logger = LoggerFactory.getLogger(AuthenticationService.class);
     private final UserRepository userRepository;
@@ -82,9 +84,12 @@ public class AuthenticationServiceImpl implements AuthenticationService {
 
         try {
             emailService.sendEmail(registerRequestBody.email(), subject, body);
-        } catch (Exception e) {
+        } catch (MessagingException | UnsupportedEncodingException e) {
             logger.info("Error while sending email: {}", e.getMessage());
             throw new RuntimeException("Error while sending email verification token", e);
+        } catch (Exception e) {
+            logger.info("Unknown Error while sending email: {}", e.getMessage());
+            throw new RuntimeException("Unknown while sending email verification token", e);
         }
 
         String authToken = jsonWebToken.generateToken(registerRequestBody.email());
@@ -155,6 +160,7 @@ public class AuthenticationServiceImpl implements AuthenticationService {
     }
 
     @Override
+    @Transactional
     public User updateUserProfile(User user, Long id, String firstName, String lastName, String company,
             String position,
             String location, String profilePicture, String coverPicture, String about) {
@@ -176,10 +182,13 @@ public class AuthenticationServiceImpl implements AuthenticationService {
     }
 
     @Override
+    @Transactional(readOnly = true)
     public User getUserById(Long id) {
         return userRepository.findById(id).orElseThrow(() -> new IllegalArgumentException("User not found."));
     }
 
+    @Transactional(readOnly = true)
+    @Override
     public User getUser(String email) {
         return userRepository.findByEmail(email)
                 .orElseThrow(() -> new IllegalArgumentException("User not found."));
@@ -226,9 +235,12 @@ public class AuthenticationServiceImpl implements AuthenticationService {
         userRepository.save(user);
 
         String subject = "Email Verification";
-        String body = String.format("Only one step to take full advantage of LinkedIn.\n\n"
-                + "Enter this code to verify your email: " + "%s\n\n" + "The code will expire in " + "%s"
-                + " minutes.",
+        String body = String.format("""
+                Only one step to take full advantage of LinkedIn.
+
+                Enter this code to verify your email: %s
+
+                The code will expire in %s minutes.""",
                 emailVerificationToken, durationInMinutes);
 
         try {
@@ -241,6 +253,7 @@ public class AuthenticationServiceImpl implements AuthenticationService {
     }
 
     @Override
+    @Transactional
     public void deleteUser(Long userId) {
         // User user = userRepository.findById(userId).orElseThrow(
         // () -> new IllegalArgumentException(
