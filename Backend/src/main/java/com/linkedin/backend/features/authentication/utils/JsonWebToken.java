@@ -58,6 +58,7 @@ public class JsonWebToken {
     }
 
     private Claims extractAllClaims(String token) {
+        // System.out.println(token);
         return Jwts.parser()
                 .verifyWith(getKey())
                 .build()
@@ -107,7 +108,7 @@ public class JsonWebToken {
                     })
                     .collect(Collectors.toList());
 
-            System.out.println(keys);
+            // System.out.println(keys);
 
             // List<Map<String, Object>> keys = (List<Map<String, Object>>)
             // body.get("keys");

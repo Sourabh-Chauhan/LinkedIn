@@ -48,7 +48,7 @@ public class FeedController {
     public ResponseEntity<Post> createPost(@RequestParam(value = "picture", required = false) MultipartFile picture,
             @RequestParam("content") String content,
             @RequestAttribute("authenticatedUser") User user) {
-        System.out.println("Creating post with ID: " + picture.getSize());
+//        System.out.println("Creating post with ID: " + picture.isEmpty());
         Post createdPost = feedService.createPost(picture, content, user.getId());
         return ResponseEntity.status(HttpStatus.CREATED).body(createdPost);
     }
