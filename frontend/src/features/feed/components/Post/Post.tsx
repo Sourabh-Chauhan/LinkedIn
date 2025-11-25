@@ -10,7 +10,6 @@ import {useNavigate} from "react-router-dom";
 
 import Input from "../../../../components/Input/Input.tsx";
 import Comment, {type IComment} from "../Comment/Comment.tsx";
-import comment from "../Comment/Comment.tsx";
 
 export interface IPost {
     id: number;

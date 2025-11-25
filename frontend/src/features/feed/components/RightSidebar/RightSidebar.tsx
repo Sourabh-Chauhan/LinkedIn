@@ -1,14 +1,15 @@
-import React, { useEffect, useState } from "react";
+import {useEffect, useState} from "react";
 import classes from "./RightSidebar.module.scss";
-import type { IUser } from "../../../authentication/contexts/AuthenticationContextProvider";
-import { useNavigate, useParams } from "react-router-dom";
-import { request } from "../../../../utils/api";
-import { Loader } from "../../../../components/Loader/Loader";
+import type {IUser} from "../../../authentication/contexts/AuthenticationContextProvider";
+import {useNavigate, useParams} from "react-router-dom";
+import {request} from "../../../../utils/api";
+import {Loader} from "../../../../components/Loader/Loader";
+
 function RightSidebar() {
     const [suggestions, setSuggestions] = useState<IUser[]>([]);
     const [loading, setLoading] = useState(true);
     const navigate = useNavigate();
-    const { id } = useParams();
+    const {id} = useParams();
 
     useEffect(() => {
         request<IUser[]>({
@@ -31,14 +32,14 @@ function RightSidebar() {
                 {suggestions.map((suggestion: IUser) => {
                     return <div className={classes.item} key={suggestion.id}>
                         <button className={classes.avatar} onClick={() => navigate("/profile/" + suggestion.id)}>
-                            <img src={suggestion.profilePicture || "/avatar.svg"} alt="" />
+                            <img src={suggestion.profilePicture || "/avatar.svg"} alt=""/>
                         </button>
                     </div>;
                 })}
             </div>
             RightSidebar
 
-            {loading && <Loader isInline />}
+            {loading && <Loader isInline/>}
         </div>
     );
 }

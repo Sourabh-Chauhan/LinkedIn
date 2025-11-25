@@ -1,4 +1,4 @@
-import React, {useEffect, useState} from 'react'
+import {useEffect, useState} from 'react'
 import classes from "./Search.module.scss";
 import Input from "../../../Input/Input.tsx";
 import {useNavigate} from "react-router-dom";
@@ -27,7 +27,7 @@ const Search = () => {
         return () => {
             if (timeout) clearTimeout(timeout)
         }
-        
+
     }, [searchTerm]);
 
     return (
